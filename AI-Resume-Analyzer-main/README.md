@@ -190,7 +190,7 @@ This project strengthened my understanding of:
 
 **karizma nbsk**
 
-B.Tech – Electronics & Communication Engineering
+B.Tech – computer science and data science
 
 Passionate about Artificial Intelligence, Machine Learning, and Full-Stack AI Applications.
 
