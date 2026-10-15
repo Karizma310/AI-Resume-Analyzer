@@ -1,0 +1,263 @@
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle,
+)
+
+
+def create_pdf(
+    summary,
+    ats_analysis,
+    interview_questions,
+    filename="Resume_Report.pdf",
+):
+
+    styles = getSampleStyleSheet()
+
+    doc = SimpleDocTemplate(filename)
+
+    story = []
+
+    title_style = styles["Title"]
+    heading_style = styles["Heading2"]
+    normal_style = styles["BodyText"]
+
+    # -----------------------
+    # Title
+    # -----------------------
+
+    story.append(
+        Paragraph(
+            "AI Resume Analysis Report",
+            title_style,
+        )
+    )
+
+    story.append(Spacer(1, 20))
+
+    # -----------------------
+    # ATS Score
+    # -----------------------
+
+    ats_score = ats_analysis.get("ats_score", 0)
+
+    table = Table(
+        [
+            ["ATS Score", f"{ats_score}%"],
+        ],
+        colWidths=[200, 100],
+    )
+
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#2563eb")),
+                ("TEXTCOLOR", (0, 0), (-1, -1), colors.white),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("FONTNAME", (0, 0), (-1, -1), "Helvetica-Bold"),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+                ("TOPPADDING", (0, 0), (-1, -1), 10),
+            ]
+        )
+    )
+
+    story.append(table)
+
+    story.append(Spacer(1, 25))
+
+    # -----------------------
+    # Summary
+    # -----------------------
+
+    story.append(
+        Paragraph(
+            "Resume Summary",
+            heading_style,
+        )
+    )
+
+    story.append(
+        Paragraph(
+            (summary or "").replace("\n", "<br/>"),
+            normal_style,
+        )
+    )
+
+    story.append(Spacer(1, 20))
+
+    # -----------------------
+    # Matching Skills
+    # -----------------------
+
+    story.append(
+        Paragraph(
+            "Matching Skills",
+            heading_style,
+        )
+    )
+
+    matching = ats_analysis.get("matching_skills", [])
+
+    if matching:
+
+        for skill in matching:
+            story.append(
+                Paragraph(
+                    f"• {skill}",
+                    normal_style,
+                )
+            )
+
+    else:
+
+        story.append(
+            Paragraph(
+                "No matching skills detected.",
+                normal_style,
+            )
+        )
+
+    story.append(Spacer(1, 20))
+
+    # -----------------------
+    # Missing Skills
+    # -----------------------
+
+    story.append(
+        Paragraph(
+            "Missing Skills",
+            heading_style,
+        )
+    )
+
+    missing = ats_analysis.get("missing_skills", [])
+
+    if missing:
+
+        for skill in missing:
+            story.append(
+                Paragraph(
+                    f"• {skill}",
+                    normal_style,
+                )
+            )
+
+    else:
+
+        story.append(
+            Paragraph(
+                "No missing skills.",
+                normal_style,
+            )
+        )
+
+    story.append(Spacer(1, 20))
+
+    # -----------------------
+    # Strengths
+    # -----------------------
+
+    story.append(
+        Paragraph(
+            "Strengths",
+            heading_style,
+        )
+    )
+
+    for item in ats_analysis.get("strengths", []):
+
+        story.append(
+            Paragraph(
+                f"• {item}",
+                normal_style,
+            )
+        )
+
+    story.append(Spacer(1, 20))
+
+    # -----------------------
+    # Weaknesses
+    # -----------------------
+
+    story.append(
+        Paragraph(
+            "Weaknesses",
+            heading_style,
+        )
+    )
+
+    for item in ats_analysis.get("weaknesses", []):
+
+        story.append(
+            Paragraph(
+                f"• {item}",
+                normal_style,
+            )
+        )
+
+    story.append(Spacer(1, 20))
+
+    # -----------------------
+    # Suggestions
+    # -----------------------
+
+    story.append(
+        Paragraph(
+            "Suggestions",
+            heading_style,
+        )
+    )
+
+    for item in ats_analysis.get("suggestions", []):
+
+        story.append(
+            Paragraph(
+                f"• {item}",
+                normal_style,
+            )
+        )
+
+    story.append(Spacer(1, 20))
+
+    # -----------------------
+    # Interview Questions
+    # -----------------------
+
+    story.append(
+        Paragraph(
+            "Interview Questions",
+            heading_style,
+        )
+    )
+
+    story.append(
+        Paragraph(
+            (interview_questions or "").replace(
+                "\n",
+                "<br/>",
+            ),
+            normal_style,
+        )
+    )
+
+    story.append(Spacer(1, 30))
+
+    # -----------------------
+    # Footer
+    # -----------------------
+
+    story.append(
+        Paragraph(
+            "<font color='grey'>Generated by AI Resume Analyzer • Built with Python, Streamlit & Google Gemini</font>",
+            normal_style,
+        )
+    )
+
+    doc.build(story)
+
+    return filename
+    
